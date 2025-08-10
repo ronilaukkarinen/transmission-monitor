@@ -60,8 +60,8 @@ NF==0 {next}
 
         progress_bar = \"\"
         for (i=1; i<=bar_width; i++) {
-            if (i <= filled) progress_bar = progress_bar WHITE \"█\" RESET
-            else progress_bar = progress_bar \"░\"
+            if (i <= filled) progress_bar = progress_bar WHITE \"▰\" RESET
+            else progress_bar = progress_bar \"▱\"
         }
         progress_bar = progress_bar \" \" sprintf(\"%3s\", percentage)
 
@@ -69,38 +69,27 @@ NF==0 {next}
         up_colored = (up_speed == \"0.0\") ? GREY up_speed RESET : GREY up_speed RESET
         down_colored = (down_speed == \"0.0\") ? GREEN down_speed \" KB/s\" RESET : GREEN down_speed \" kB/s\" RESET
 
-        # Adjust spacing based on size and ETA length
+        # Handle each possible size length individually with proper spacing
         size_len = length(size)
-        eta_len = length(eta)
         
-        if (size_len <= 7) {
-            # For sizes like \"1.2 GB\" - 7 chars or less
-            if (eta_len <= 5) {
-                printf \"%-21s  %-10s  %s   %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            } else {
-                printf \"%-21s  %-10s  %s  %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            }
+        if (size_len == 6) {
+            # \"1.2 GB\" - 6 chars
+            printf \"%-21s    %-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
+        } else if (size_len == 7) {
+            # \"4.17 GB\" - 7 chars  
+            printf \"%-21s   %-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
         } else if (size_len == 8) {
-            # For sizes like \"12.3 GB\" - 8 chars
-            if (eta_len <= 5) {
-                printf \"%-21s  %-10s %s   %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            } else {
-                printf \"%-21s  %-10s %s  %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            }
+            # \"105.5 MB\" - 8 chars
+            printf \"%-21s  %-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
         } else if (size_len == 9) {
-            # For sizes like \"123.4 GB\" - 9 chars
-            if (eta_len <= 5) {
-                printf \"%-21s  %-10s%s   %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            } else {
-                printf \"%-21s  %-10s%s  %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            }
+            # \"1234.5 GB\" - 9 chars
+            printf \"%-21s %-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
+        } else if (size_len == 10) {
+            # \"12345.6 GB\" - 10 chars
+            printf \"%-21s%-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
         } else {
-            # For sizes like \"1234.5 GB\" - 10+ chars
-            if (eta_len <= 5) {
-                printf \"%-21s  %-10s%s  %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            } else {
-                printf \"%-21s  %-10s%s %-15s  %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
-            }
+            # Default for other lengths
+            printf \"%-21s  %-10s   %-8s   %-15s   %15s\\n\", progress_bar, GREY size RESET, GREY eta RESET, GREY name RESET, down_colored
         }
     }
 }"'
