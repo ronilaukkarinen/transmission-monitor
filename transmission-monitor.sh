@@ -12,7 +12,7 @@ if [[ -z "$TRANSMISSION_URL" || -z "$TRANSMISSION_USER" || -z "$TRANSMISSION_PAS
 fi
 
 watch --no-title --interval=.05 --color 'transmission-remote "$TRANSMISSION_URL" -n "$TRANSMISSION_USER:$TRANSMISSION_PASS" -l | \
-grep -v "Stopped" | grep -v "Idle" | \
+grep -v "Stopped" | grep -v "Idle" | grep -v "Done" | \
 awk "
 BEGIN {
     # ANSI color codes
@@ -46,6 +46,14 @@ NF==0 {next}
         for (i=11; i<=NF; i++) {
             name = name \$i
             if (i < NF) name = name \" \"
+        }
+        
+        # If name is still empty, try extracting from field 10 onwards
+        if (name == \"\" && NF >= 9) {
+            for (i=10; i<=NF; i++) {
+                name = name \$i
+                if (i < NF) name = name \" \"
+            }
         }
 
         # Truncate name to 15 characters
